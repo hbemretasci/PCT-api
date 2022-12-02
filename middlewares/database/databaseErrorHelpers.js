@@ -17,9 +17,9 @@ const checkUserExist = asyncErrorWrapper(async (req, res, next) => {
 });
 
 const checkProjectExist = asyncErrorWrapper(async (req, res, next) => {
-    const { id } = req.params;
+    const project_id = req.params.id || req.params.project_id;
 
-    const project = await Project.findById(id);
+    const project = await Project.findById(project_id);
 
     if(!project) {
         return next(new CustomError("There is no such project with that id.", 400));

@@ -38,6 +38,12 @@ const ProjectSchema = new Schema({
         require: true,
         ref: "User"
     },
+    tools: [
+        {
+            type: mongoose.Schema.ObjectId,
+            ref: "Tool"
+        }
+    ],
     users: [
         {
             type: mongoose.Schema.ObjectId,

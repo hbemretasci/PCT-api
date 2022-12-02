@@ -1,5 +1,4 @@
 const Project = require('../models/Project');
-const CustomError = require('../helpers/error/CustomError');
 const asyncErrorWrapper = require('express-async-handler');
 
 const newProject = asyncErrorWrapper(async (req, res, next) => {
