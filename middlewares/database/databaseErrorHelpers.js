@@ -1,5 +1,6 @@
 const User = require('../../models/User');
 const Project = require('../../models/Project');
+const Tool = require('../../models/Tool');
 const CustomError = require('../../helpers/error/CustomError');
 const asyncErrorWrapper = require('express-async-handler');
 
@@ -29,7 +30,23 @@ const checkProjectExist = asyncErrorWrapper(async (req, res, next) => {
     next();
 });
 
+const checkProjectAndToolExist = asyncErrorWrapper(async (req, res, next) => {
+    const project_id = req.params.project_id;
+    const tool_id = req.params.tool_id;
+
+    const tool = await Tool.findOne({
+        _id: tool_id,
+        project: project_id
+    });
+
+    if(!tool) {
+        return next(new CustomError("There is no tool with that id associated with project.", 400));
+    }
+    next();
+});
+
 module.exports = {
     checkUserExist,
-    checkProjectExist
+    checkProjectExist,
+    checkProjectAndToolExist
 }
