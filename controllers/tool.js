@@ -59,8 +59,47 @@ const getSingleTool = asyncErrorWrapper(async (req, res, next) => {
 
 });
 
+const editTool = asyncErrorWrapper(async (req, res, next) => {
+    const { tool_id } = req.params;
+
+    const { name, description } = req.body;
+
+    let  tool = await Tool.findById(tool_id);
+
+    tool.name = name;
+    tool.description = description;
+
+    await tool.save();
+
+    return res.status(200)
+    .json({
+        success: true,
+        data: tool
+    });
+});
+
+const deleteTool = asyncErrorWrapper(async (req, res, next) => {
+    const { tool_id } = req.params;
+    const { project_id } = req.params;
+
+    await Tool.findByIdAndRemove(tool_id);
+
+    const project = await Project.findById(project_id);
+
+    project.tools.splice(project.tools.indexOf(tool_id), 1);
+    await project.save();
+
+    return res.status(200)
+    .json({
+        success: true,
+        message: "Tool delete operation successfull."
+    });
+});
+
 module.exports = {
     addNewToolToProject,
     getAllToolByProject,
-    getSingleTool
+    getSingleTool,
+    editTool,
+    deleteTool
 }

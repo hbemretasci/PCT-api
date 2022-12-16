@@ -42,6 +42,8 @@ const ToolSchema = new Schema({
 ToolSchema.pre("save", async function(next) {
     if(!this.isModified("user")) {
         next();
+
+        // edit tool kısmında burada hata oluşuyor, bağlantı çoklanıyor.
     }
 
     try {

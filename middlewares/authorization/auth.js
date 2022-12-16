@@ -4,9 +4,9 @@ const { isTokenIncluded, getAccessTokenFromHeader } = require('../../helpers/aut
 const asyncErrorWrapper = require('express-async-handler');
 const User = require('../../models/User');
 const Project = require('../../models/Project');
+const Tool = require('../../models/Tool');
 
 const getAccessToRoute = (req, res, next) => {
-
     const { JWT_SECRET_KEY } = process.env;
 
     if(!isTokenIncluded(req)) {
@@ -49,8 +49,21 @@ const getProjectLeaderAccess = asyncErrorWrapper(async (req, res, next) => {
     next();
 });
 
+const getToolOwnerAccess = asyncErrorWrapper(async (req, res, next) => {
+    const userId = req.user.id;
+    const toolId = req.params.tool_id;
+
+    const tool = await Tool.findById(toolId);
+
+    if(tool.user != userId ) {
+        return next(new CustomError("Only owner can handle this operation.", 403));
+    }
+    next();
+});
+
 module.exports = {
     getAccessToRoute,
     getAdminAccess,
-    getProjectLeaderAccess
+    getProjectLeaderAccess,
+    getToolOwnerAccess
 }
