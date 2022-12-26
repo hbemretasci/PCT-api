@@ -15,21 +15,17 @@ const ToolSchema = new Schema({
     },
     mainCategory: {
         type: String,
-        default: "general",
-        enum: ["general", "specific"]
     },
     subCategory: {
         type: String,
-        default: "general",
-        enum: ["general", "specific"]
     },
     createdAt: {
         type: Date,
         default: Date.now
     },
-    user: {
+    addedUser: {
         type: mongoose.Schema.ObjectId,
-        require: true,
+        required: true,
         ref: "User"
     },
     project: {

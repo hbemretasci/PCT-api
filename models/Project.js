@@ -16,11 +16,6 @@ const ProjectSchema = new Schema({
         type: String,
         required: [true, "Please provide a objective."]
     },
-    category: {
-        type: String,
-        default: "general",
-        enum: ["general", "specific"]
-    },
     createdAt: {
         type: Date,
         default: Date.now
@@ -35,19 +30,33 @@ const ProjectSchema = new Schema({
     },
     leader: {
         type: mongoose.Schema.ObjectId,
-        require: true,
+        required: true,
         ref: "User"
     },
+    sponsor: {
+        type: mongoose.Schema.ObjectId,
+        required: true,
+        ref: "User"
+    },
+    status: {
+        type: String,
+        default: "not started",
+        enum: ["not started", "in progress", "suspended","canceled","completed"]
+    },
+    classified: {
+        type: Boolean,
+        default: false
+    },
+    team: [
+        {
+            type: mongoose.Schema.ObjectId,
+            ref: "User"
+        }
+    ],
     tools: [
         {
             type: mongoose.Schema.ObjectId,
             ref: "Tool"
-        }
-    ],
-    users: [
-        {
-            type: mongoose.Schema.ObjectId,
-            ref: "User"
         }
     ]
 });

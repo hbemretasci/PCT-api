@@ -17,7 +17,7 @@ const app = express();
 //Express - Body Middleware
 app.use(express.json());
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT;  
 
 //Routers Middleware
 app.use("/api", routers);

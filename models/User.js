@@ -32,10 +32,18 @@ const UserSchema = new Schema({
         type: Date,
         default: Date.now
     },
+    organization: {
+        type: String,
+        default: "company",
+        enum: ["company", "topunit"]
+    },
+    organizationName: {
+        type: String,
+        required: [true, "Please provide a organization name."]
+    },
     title: String,
-    company: String,
-    organization: String,
-    blocked: {
+    department: String,
+    disabled: {
         type: Boolean,
         default: false
     },
