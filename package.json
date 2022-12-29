@@ -13,7 +13,7 @@
     "rest",
     "api"
   ],
-  "author": "Hasan Basri Emre Taşçı",
+  "author": "Hasan Basri Emre Taşçi",
   "license": "MIT",
   "dependencies": {
     "bcryptjs": "^2.4.3",

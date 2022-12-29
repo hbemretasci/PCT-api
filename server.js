@@ -14,18 +14,17 @@ connectDatabase();
 
 const app = express();
 
-//Express - Body Middleware
+// Express - Body Middleware
 app.use(express.json());
 
 const PORT = process.env.PORT;  
 
-//Routers Middleware
+// Routers Middleware
 app.use("/api", routers);
-
-//Error Handling
+ 
+// Error Handling
 app.use(customErrorHandler);
 
 app.listen(PORT, () => {
     console.log(`App started on ${PORT} : ${process.env.NODE_ENV}`)
 });
-

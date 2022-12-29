@@ -30,7 +30,7 @@ const ToolSchema = new Schema({
     },
     project: {
         type: mongoose.Schema.ObjectId,
-        require: true,
+        required: true,
         ref: "Project"
     }
 });

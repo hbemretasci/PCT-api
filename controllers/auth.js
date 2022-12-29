@@ -1,22 +1,10 @@
 const User = require('../models/User');
 const CustomError = require('../helpers/error/CustomError');
 const asyncErrorWrapper = require('express-async-handler');
+const bcrypt = require('bcryptjs');
 const { sendJwtToClient } = require('../helpers/authorization/tokenHelpers');
 const { validateUserInput, comparePassword } = require('../helpers/input/inputHelpers');
 const sendEmail = require('../helpers/libraries/sendEmail');
-
-const register = asyncErrorWrapper(async (req, res, next) => {
-    const { name, email, password, role } = req.body;
-    
-    const user = await User.create({
-        name,
-        email,
-        password,
-        role
-    });
-
-    sendJwtToClient(user, res);
-});
 
 const login = asyncErrorWrapper(async (req, res, next) => {
     const { email, password } = req.body;
@@ -26,6 +14,9 @@ const login = asyncErrorWrapper(async (req, res, next) => {
     }
 
     const user = await User.findOne({ email }).select("+password");
+    if(!user) {
+        return next(new CustomError("Please check your credentials.", 400));
+    }
 
     if(!comparePassword(password, user.password)) {
         return next(new CustomError("Please check your credentials.", 400));
@@ -37,7 +28,8 @@ const login = asyncErrorWrapper(async (req, res, next) => {
 const logout = asyncErrorWrapper(async (req, res, next) => {
     const { NODE_ENV } = process.env;
 
-    return res.status(200).cookie({
+    return res.status(200)
+    .clearCookie("access_token", {
         httpOnly: true,
         expires: new Date(Date.now()),
         secure: NODE_ENV === "development" ? false : true
@@ -48,15 +40,33 @@ const logout = asyncErrorWrapper(async (req, res, next) => {
     });
 });
 
-const getUser = (req, res, next) => {
-    res.json({
+const getUserProfile = asyncErrorWrapper(async (req, res, next) => {
+    const user = await User.findById(req.user.id);
+    
+    res.status(200).json({
         success: true,
-        data: {
-            id: req.user.id,
-            name: req.user.name
-        }
+        data: user
     });
-}
+});
+
+const editUser = asyncErrorWrapper(async (req, res, next) => {
+    const information = req.body;
+
+    if(req.body.password) {
+        var salt = bcrypt.genSaltSync(10);
+        information.password = bcrypt.hashSync(req.body.password, salt);
+    };
+
+    const user = await User.findByIdAndUpdate(req.user.id, information, {
+        new: true,
+        runValidators: true
+    });
+
+    return res.status(200).json({
+        success: true,
+        data: user
+    });
+});
 
 const forgotPassword = asyncErrorWrapper(async (req, res, next) => {
     const resetEmail = req.body.email;
@@ -129,27 +139,11 @@ const resetPassword = asyncErrorWrapper(async (req, res, next) => {
     });
 });
 
-const editDetails = asyncErrorWrapper(async (req, res, next) => {
-    const editInformation = req.body;
-
-    const user = await User.findByIdAndUpdate(req.user.id, editInformation, {
-        new: true,
-        runValidators: true
-    });
-
-    return res.status(200)
-    .json({
-        success: true,
-        data: user
-    });
-});
-
 module.exports = {
-    register,
-    getUser,
     login,
     logout,
+    getUserProfile,
+    editUser,
     forgotPassword,
-    resetPassword,
-    editDetails
+    resetPassword
 }
