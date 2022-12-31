@@ -8,9 +8,7 @@ router.post("/login", login);
 router.get("/logout", getAccessToRoute, logout);
 router.get("/profile", getAccessToRoute, getUserProfile);
 router.put("/edit", getAccessToRoute, editUser);
-
 router.post("/forgotpassword", forgotPassword);
 router.put("/resetpassword", resetPassword);
-
 
 module.exports = router

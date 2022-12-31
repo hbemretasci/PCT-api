@@ -95,8 +95,7 @@ const forgotPassword = asyncErrorWrapper(async (req, res, next) => {
             html: emailTemplate
         });
 
-        return res.status(200)
-        .json({
+        return res.status(200).json({
             success: true,
             message: "Token sent to your email."
         });
@@ -110,7 +109,6 @@ const forgotPassword = asyncErrorWrapper(async (req, res, next) => {
 });
 
 const resetPassword = asyncErrorWrapper(async (req, res, next) => {
-
     const { resetPasswordToken } = req.query;
     const { password } = req.body;
 
@@ -132,8 +130,7 @@ const resetPassword = asyncErrorWrapper(async (req, res, next) => {
 
     await user.save();
 
-    return res.status(200)
-    .json({
+    return res.status(200).json({
         success: true,
         message: "Reset password process succesfull."
     });
