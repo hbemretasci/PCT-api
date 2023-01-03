@@ -14,8 +14,13 @@ const login = asyncErrorWrapper(async (req, res, next) => {
     }
 
     const user = await User.findOne({ email }).select("+password");
+
     if(!user) {
         return next(new CustomError("Please check your credentials.", 400));
+    }
+
+    if(user.disabled) {
+        return next(new CustomError("User has disabled.", 401));
     }
 
     if(!comparePassword(password, user.password)) {

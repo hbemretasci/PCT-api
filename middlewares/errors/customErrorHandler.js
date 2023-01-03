@@ -7,7 +7,7 @@ const customErrorHandler = (err, req, res, next) => {
         customError = new CustomError("Unexpected Syntax.", 400);
     }
     if(err.name === "ValidationError") {
-        customError = new CustomError(err.message, 400);
+        customError = new CustomError("Validation error.", 400);
     }
     if(err.code === 11000) {
         customError = new CustomError("Duplicate key found, please check your input.", 400);

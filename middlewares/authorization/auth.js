@@ -31,7 +31,7 @@ const getAdminAccess = asyncErrorWrapper(async (req, res, next) => {
 
     const user = await User.findById(id);
 
-    if(user.role !=="admin") {
+    if(user.role !== "admin") {
         return next(new CustomError("Only admins can access this route.", 403));
     }
     next();
@@ -49,14 +49,40 @@ const getProjectLeaderAccess = asyncErrorWrapper(async (req, res, next) => {
     next();
 });
 
-const getToolOwnerAccess = asyncErrorWrapper(async (req, res, next) => {
+const getProjectLeaderOrTeamAccess = asyncErrorWrapper(async (req, res, next) => {
+    const userId = req.user.id;
+    const projectId = req.params.project_id;
+
+    const project = await Project.findById(projectId);
+
+    if((project.leader != userId) && (!project.team.includes(userId))) {
+        return next(new CustomError("Only leader or team member can handle this operation.", 403));
+    }
+    next();
+});
+
+const getProjectLeaderOrToolOwnerAccess = asyncErrorWrapper(async (req, res, next) => {
     const userId = req.user.id;
     const toolId = req.params.tool_id;
 
-    const tool = await Tool.findById(toolId);
+    const tool = await Tool.findById(toolId).populate({
+        path: "project",
+        select: "leader"
+    });
 
-    if(tool.user != userId ) {
-        return next(new CustomError("Only owner can handle this operation.", 403));
+    if((tool.project.leader != userId) && (tool.addedUser != userId)) {
+        return next(new CustomError("Only tool owner or project liader can handle this operation.", 403));
+    }
+    next();
+});
+
+const getSupervisorOrAdminAccess = asyncErrorWrapper(async (req, res, next) => {
+    const { id } = req.user;
+
+    const user = await User.findById(id);
+
+    if(user.role == "user") {
+        return next(new CustomError("Only admins or supervisors can access this route.", 403));
     }
     next();
 });
@@ -65,5 +91,7 @@ module.exports = {
     getAccessToRoute,
     getAdminAccess,
     getProjectLeaderAccess,
-    getToolOwnerAccess
+    getProjectLeaderOrTeamAccess,
+    getProjectLeaderOrToolOwnerAccess,
+    getSupervisorOrAdminAccess
 }

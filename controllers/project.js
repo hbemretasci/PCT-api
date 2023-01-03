@@ -1,7 +1,8 @@
 const Project = require('../models/Project');
 const asyncErrorWrapper = require('express-async-handler');
+const CustomError = require('../helpers/error/CustomError');
 
-const newProject = asyncErrorWrapper(async (req, res, next) => {
+const createProject = asyncErrorWrapper(async (req, res, next) => {
     const information = req.body;
 
     const project = await Project.create({
@@ -9,18 +10,29 @@ const newProject = asyncErrorWrapper(async (req, res, next) => {
         leader: req.user.id
     });
 
-    res.status(200)
-    .json({
+    res.status(201).json({
         success: true,
         data: project
     });
 });
 
-const getSingleProject = asyncErrorWrapper(async (req, res, next) => {
-    return res.status(200)
-    .json({
+const editProject = asyncErrorWrapper(async (req, res, next) => {
+    let project = req.projectData;
+
+    const { title, subject, objectives, status, classified, team  } = req.body;
+
+    project.title = title;
+    project.subject = subject;
+    project.objectives = objectives;
+    project.status = status;
+    project.classified = classified;
+    project.team = team;
+
+    project = await project.save();
+
+    return res.status(200).json({
         success: true,
-        data: req.projectData
+        data: project
     });
 });
 
@@ -33,41 +45,72 @@ const getAllProjects = asyncErrorWrapper(async (req, res, next) => {
     });
 });
 
-const editProject = asyncErrorWrapper(async (req, res, next) => {
-    const { id } = req.params;
-    const { title, subject, objectives } = req.body;
+const getSingleProjectById = asyncErrorWrapper(async (req, res, next) => {
+    const project = req.projectData;
 
-    let project = await Project.findById(id);
-
-    project.title = title;
-    project.subject = subject;
-    project.objectives = objectives;
-
-    project = await project.save();
-
-    return res.status(200)
-    .json({
+    return res.status(200).json({
         success: true,
         data: project
     });
 });
 
-const deleteProject = asyncErrorWrapper(async (req, res, next) => {
-    const { id } = req.params;
+const addTeamMemberToProject = asyncErrorWrapper(async (req, res, next) => {
+    let project = req.projectData;
+    
+    const { memberId } = req.body;
 
-    await Project.findByIdAndDelete(id);
+    if(project.team.includes(memberId)) {
+        return next(new CustomError("This user is already a team member.", 400));
+    }
 
-    res.status(200)
-    .json({
+    project.team.push(memberId);
+
+    await project.save();
+
+    return res.status(200).json({
+        success: true,
+        data: project.team
+    });
+});
+
+const removeTeamMemberFromProject = asyncErrorWrapper(async (req, res, next) => {
+    let project = req.projectData;
+
+    const { memberId } = req.body;
+
+    if(!project.team.includes(memberId)) {
+        return next(new CustomError("This user is not a member of the team.", 400));
+    }
+
+    const index = project.team.indexOf(memberId);
+
+    project.team.splice(index,1);
+
+    await project.save();
+
+    return res.status(200).json({
+        success: true,
+        data: project.team
+    });
+});
+
+const removeProject = asyncErrorWrapper(async (req, res, next) => {
+    let project = req.projectData;
+
+    await project.remove();
+
+    return res.status(200).json({
         success: true,
         message: "Project delete operation successfull."
     });
 });
 
 module.exports = {
-    newProject,
-    getAllProjects,
-    getSingleProject,
+    createProject,
     editProject,
-    deleteProject
+    getAllProjects,
+    getSingleProjectById,
+    addTeamMemberToProject,
+    removeTeamMemberFromProject,
+    removeProject
 }

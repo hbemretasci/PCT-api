@@ -1,15 +1,14 @@
 const express = require('express');
-const { getAccessToRoute } = require('../middlewares/authorization/auth');
-const { checkProjectAndToolExist} = require('../middlewares/database/databaseErrorHelpers');
-const { addNewToolToProject, getAllToolByProject, getSingleTool, editTool, deleteTool } = require('../controllers/tool');
-const { getToolOwnerAccess } = require('../middlewares/authorization/auth');
+const { getProjectLeaderOrTeamAccess, getProjectLeaderOrToolOwnerAccess } = require('../middlewares/authorization/auth');
+const { checkProjectExist, checkToolExist} = require('../middlewares/database/databaseErrorHelpers');
+const { addToolToProject, editExistingTool, getAllToolsByProject, getSingleToolById, removeToolFromProject } = require('../controllers/tool');
 
 const router = express.Router({ mergeParams:true });
 
-router.get("/", getAllToolByProject);
-router.post("/", getAccessToRoute, addNewToolToProject);
-router.get("/:tool_id", checkProjectAndToolExist, getSingleTool);
-router.put("/:tool_id/edit", [getAccessToRoute, checkProjectAndToolExist, getToolOwnerAccess], editTool);
-router.delete("/:tool_id/delete", [getAccessToRoute, checkProjectAndToolExist, getToolOwnerAccess], deleteTool);
+router.post("/", [checkProjectExist, getProjectLeaderOrTeamAccess], addToolToProject);
+router.put("/:tool_id/edit", [checkToolExist, getProjectLeaderOrTeamAccess], editExistingTool);
+router.get("/", checkProjectExist, getAllToolsByProject);
+router.get("/:tool_id", checkToolExist, getSingleToolById);
+router.delete("/:tool_id/delete", [checkToolExist, getProjectLeaderOrToolOwnerAccess], removeToolFromProject);
 
 module.exports = router

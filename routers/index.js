@@ -5,7 +5,7 @@ const admin = require('./admin');
 
 const router = express.Router();
 
-router.use("/projects", project);
+router.use("/project", project);
 router.use("/auth", auth);
 router.use("/admin", admin);
 

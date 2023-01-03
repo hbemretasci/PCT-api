@@ -65,20 +65,6 @@ UserSchema.methods.generateJwtFromUser = function() {
     return token;
 }
 
-UserSchema.pre("save", function(next) {
-    if(!this.isModified("password")) {
-        next();
-    }
-    bcrypt.genSalt(10, (err, salt) => {
-        if(err) next(err);
-        bcrypt.hash(this.password, salt, (err, hash) => {
-            if(err) next(err);
-            this.password = hash;
-            next();
-        });
-    });
-});
-
 UserSchema.methods.getResetPasswordTokenFromUser = function() {
     const randomHexString = crypto.randomBytes(15).toString("hex");
     const { RESET_PASSWORD_EXPIRE } = process.env;
@@ -94,10 +80,18 @@ UserSchema.methods.getResetPasswordTokenFromUser = function() {
     return resetPasswordToken;
 }
 
-UserSchema.post("remove", async function() {
-    await Project.deleteMany({
-        leader: this._id
-    })
+UserSchema.pre("save", function(next) {
+    if(!this.isModified("password")) {
+        return next();
+    }
+    bcrypt.genSalt(10, (err, salt) => {
+        if(err) return next(err);
+        bcrypt.hash(this.password, salt, (err, hash) => {
+            if(err) return next(err);
+            this.password = hash;
+            next();
+        });
+    });
 });
 
 module.exports = mongoose.model("User", UserSchema)

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Tool = require('./Tool');
 
 const Schema = mongoose.Schema;
 
@@ -59,6 +60,18 @@ const ProjectSchema = new Schema({
             ref: "Tool"
         }
     ]
+});
+
+ProjectSchema.pre("remove", async function() {
+    try {
+        await Tool.deleteMany({
+            project: this._id
+        });
+        next();
+    }
+    catch(err) {
+        return next(err);
+    }
 });
 
 module.exports = mongoose.model("Project", ProjectSchema)

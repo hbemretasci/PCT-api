@@ -12,41 +12,40 @@ const checkUserExist = asyncErrorWrapper(async (req, res, next) => {
     if(!user) {
         return next(new CustomError("There is no such user with that id.", 400));
     }
-
     req.userData = user;
     next();
 });
 
 const checkProjectExist = asyncErrorWrapper(async (req, res, next) => {
-    const project_id = req.params.id || req.params.project_id;
+    const projectId = req.params.id || req.params.project_id;
 
-    const project = await Project.findById(project_id);
+    const project = await Project.findById(projectId);
 
     if(!project) {
         return next(new CustomError("There is no such project with that id.", 400));
     }
-
     req.projectData = project;
     next();
 });
 
-const checkProjectAndToolExist = asyncErrorWrapper(async (req, res, next) => {
-    const project_id = req.params.project_id;
-    const tool_id = req.params.tool_id;
+const checkToolExist = asyncErrorWrapper(async (req, res, next) => {
+    const projectId = req.params.project_id;
+    const toolId = req.params.tool_id;
 
     const tool = await Tool.findOne({
-        _id: tool_id,
-        project: project_id
+        _id: toolId,
+        project: projectId
     });
 
     if(!tool) {
         return next(new CustomError("There is no tool with that id associated with project.", 400));
     }
+    req.toolData = tool;
     next();
 });
 
 module.exports = {
     checkUserExist,
     checkProjectExist,
-    checkProjectAndToolExist
+    checkToolExist
 }
