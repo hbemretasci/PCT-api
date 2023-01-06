@@ -5,9 +5,10 @@ const CustomError = require('../../helpers/error/CustomError');
 const asyncErrorWrapper = require('express-async-handler');
 
 const checkUserExist = asyncErrorWrapper(async (req, res, next) => {
-    const { id } = req.params;
-
-    const user = await User.findById(id);
+    let userId = req.params.id;
+    if(req.params.user_id) userId = req.params.user_id;
+    
+    const user = await User.findById(userId);
 
     if(!user) {
         return next(new CustomError("There is no such user with that id.", 400));

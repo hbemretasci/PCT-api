@@ -57,7 +57,7 @@ const getSingleProjectById = asyncErrorWrapper(async (req, res, next) => {
 const addTeamMemberToProject = asyncErrorWrapper(async (req, res, next) => {
     let project = req.projectData;
     
-    const { memberId } = req.body;
+    const memberId = req.params.user_id;
 
     if(project.team.includes(memberId)) {
         return next(new CustomError("This user is already a team member.", 400));
@@ -76,7 +76,7 @@ const addTeamMemberToProject = asyncErrorWrapper(async (req, res, next) => {
 const removeTeamMemberFromProject = asyncErrorWrapper(async (req, res, next) => {
     let project = req.projectData;
 
-    const { memberId } = req.body;
+    const memberId = req.params.user_id;
 
     if(!project.team.includes(memberId)) {
         return next(new CustomError("This user is not a member of the team.", 400));
