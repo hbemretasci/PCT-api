@@ -52,7 +52,18 @@ const changeUserRole = asyncErrorWrapper(async (req, res, next) => {
 });
 
 const getAllUsers = asyncErrorWrapper(async (req, res, next) => {
-    const users = await User.find();
+    const users = await User.find().select({ __v: false });
+    return res.status(200).json({
+        success: true,
+        data: users
+    });
+});
+
+const getUsersByRole = asyncErrorWrapper(async (req, res, next) => {
+
+    const { name } = req.params;
+    
+    const users = await User.find({ role: name }).select({ __v: false });
     return res.status(200).json({
         success: true,
         data: users
@@ -73,5 +84,6 @@ module.exports = {
     changeAbleUser,
     changeUserRole,
     getAllUsers,
+    getUsersByRole,
     getSingleUserById
 }
