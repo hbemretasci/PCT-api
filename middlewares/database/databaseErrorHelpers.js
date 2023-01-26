@@ -8,7 +8,7 @@ const checkUserExist = asyncErrorWrapper(async (req, res, next) => {
     let userId = req.params.id;
     if(req.params.user_id) userId = req.params.user_id;
     
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).select({ __v: false });
 
     if(!user) {
         return next(new CustomError("There is no such user with that id.", 400));

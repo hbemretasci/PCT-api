@@ -9,9 +9,9 @@ const router = express.Router();
 
 router.post("/register", createUser);
 router.put("/able/:id", checkUserExist, changeAbleUser);
-router.put("/crole/:id", checkUserExist, changeUserRole);
+router.put("/role/:id", checkUserExist, changeUserRole);
 router.get("/", getAllUsers);
-router.get("/role/:name", getUsersByRole);
-router.get("/:id", checkUserExist, getSingleUserById);
+router.get("/:name", getUsersByRole);
+router.get("/user/:id", checkUserExist, getSingleUserById);
 
 module.exports = router
