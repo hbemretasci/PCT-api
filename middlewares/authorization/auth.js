@@ -27,11 +27,13 @@ const getAccessToRoute = (req, res, next) => {
 }
 
 const getAdminAccess = asyncErrorWrapper(async (req, res, next) => {
+    const { ADMIN } = process.env;
+
     const { id } = req.user;
 
     const user = await User.findById(id);
 
-    if(user.role !== "admin") {
+    if(user.role !== ADMIN) {
         return next(new CustomError("Only admins can access this route.", 403));
     }
     next();
@@ -71,17 +73,19 @@ const getProjectLeaderOrToolOwnerAccess = asyncErrorWrapper(async (req, res, nex
     });
 
     if((tool.project.leader != userId) && (tool.addedUser != userId)) {
-        return next(new CustomError("Only tool owner or project liader can handle this operation.", 403));
+        return next(new CustomError("Only tool owner or project leader can handle this operation.", 403));
     }
     next();
 });
 
 const getSupervisorOrAdminAccess = asyncErrorWrapper(async (req, res, next) => {
+    const { USER } = process.env;
+
     const { id } = req.user;
 
     const user = await User.findById(id);
 
-    if(user.role == "user") {
+    if(user.role == USER) {
         return next(new CustomError("Only admins or supervisors can access this route.", 403));
     }
     next();

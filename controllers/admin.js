@@ -1,3 +1,4 @@
+const CustomError = require('../helpers/error/CustomError');
 const User = require('../models/User');
 const asyncErrorWrapper = require('express-async-handler');
 
@@ -39,9 +40,16 @@ const changeAbleUser = asyncErrorWrapper(async (req, res, next) => {
 });
 
 const changeUserRole = asyncErrorWrapper(async (req, res, next) => {
-    const user = req.userData;
+    const { ADMIN, USER, SUPERVISOR } = process.env;
 
-    user.role = req.body.role;
+    const newRole = req.body.role; 
+
+    if(newRole != ADMIN && newRole != USER && newRole != SUPERVISOR ) {
+        return next(new CustomError("Invalid role definition.", 401));
+    }
+
+    const user = req.userData;
+    user.role = newRole;
 
     await user.save();
 
@@ -53,6 +61,7 @@ const changeUserRole = asyncErrorWrapper(async (req, res, next) => {
 
 const getAllUsers = asyncErrorWrapper(async (req, res, next) => {
     const users = await User.find().select({ __v: false });
+    
     return res.status(200).json({
         success: true,
         data: users
@@ -60,7 +69,6 @@ const getAllUsers = asyncErrorWrapper(async (req, res, next) => {
 });
 
 const getUsersByRole = asyncErrorWrapper(async (req, res, next) => {
-
     const { name } = req.params;
     
     const users = await User.find({ role: name }).select({ __v: false });

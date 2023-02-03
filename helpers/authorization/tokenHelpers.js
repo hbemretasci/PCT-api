@@ -1,20 +1,16 @@
 const sendJwtToClient = (user, res) => {
     const token = user.generateJwtFromUser();
     
-    const { JWT_COOKIE_EXPIRE, NODE_ENV } = process.env;
+    const { JWT_EXPIRE } = process.env;
 
-    return res.status(200)
-    .cookie("access_token", token, {
-        httpOnly: true,
-        expires: new Date(Date.now() + parseInt(JWT_COOKIE_EXPIRE) * 1000 * 60),
-        secure: NODE_ENV === "development" ? false : true
-    })
-    .json({
+    return res.status(200).json({
         success: true,
         access_token: token,
+        expiresIn: JWT_EXPIRE,
         data: {
             name: user.name,
-            email: user.email
+            email: user.email,
+            role: user.role
         }
     });
 }

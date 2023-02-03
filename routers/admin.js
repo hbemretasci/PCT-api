@@ -5,7 +5,7 @@ const { checkUserExist } = require('../middlewares/database/databaseErrorHelpers
 
 const router = express.Router();
 
-//router.use([getAccessToRoute, getAdminAccess]);
+router.use([getAccessToRoute, getAdminAccess]);
 
 router.post("/register", createUser);
 router.put("/able/:id", checkUserExist, changeAbleUser);

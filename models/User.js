@@ -19,8 +19,8 @@ const UserSchema = new Schema({
     },
     role: {
         type: String,
-        default: "user",
-        enum: ["user", "supervisor", "admin"]
+        default: "User",
+        enum: ["User", "Supervisor", "Admin"]
     },
     password: {
         type: String,
@@ -34,8 +34,8 @@ const UserSchema = new Schema({
     },
     organization: {
         type: String,
-        default: "company",
-        enum: ["company", "topunit"]
+        default: "Company",
+        enum: ["Company", "Topunit"]
     },
     organizationName: {
         type: String,

@@ -16,7 +16,7 @@ const login = asyncErrorWrapper(async (req, res, next) => {
     const user = await User.findOne({ email }).select("+password");
 
     if(!user) {
-        return next(new CustomError("Please check your credentials.", 400));
+        return next(new CustomError("Please check your email.", 400));
     }
 
     if(user.disabled) {
@@ -24,25 +24,10 @@ const login = asyncErrorWrapper(async (req, res, next) => {
     }
 
     if(!comparePassword(password, user.password)) {
-        return next(new CustomError("Please check your credentials.", 400));
+        return next(new CustomError("Please check your password.", 400));
     }
     
     sendJwtToClient(user, res);
-});
-
-const logout = asyncErrorWrapper(async (req, res, next) => {
-    const { NODE_ENV } = process.env;
-
-    return res.status(200)
-    .clearCookie("access_token", {
-        httpOnly: true,
-        expires: new Date(Date.now()),
-        secure: NODE_ENV === "development" ? false : true
-    })
-    .json({
-        success: true,
-        message: "Logout successful."
-    });
 });
 
 const getUserProfile = asyncErrorWrapper(async (req, res, next) => {
@@ -143,7 +128,6 @@ const resetPassword = asyncErrorWrapper(async (req, res, next) => {
 
 module.exports = {
     login,
-    logout,
     getUserProfile,
     editUser,
     forgotPassword,
