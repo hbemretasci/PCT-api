@@ -10,8 +10,8 @@ router.use([getAccessToRoute, getAdminAccess]);
 router.post("/register", createUser);
 router.put("/able/:id", checkUserExist, changeAbleUser);
 router.put("/role/:id", checkUserExist, changeUserRole);
-router.get("/", getAllUsers);
-router.get("/:name", getUsersByRole);
+router.get("/users", getAllUsers);
+router.get("/users/:name", getUsersByRole);
 router.get("/user/:id", checkUserExist, getSingleUserById);
 
 module.exports = router
