@@ -37,12 +37,7 @@ const editProject = asyncErrorWrapper(async (req, res, next) => {
 });
 
 const getAllProjects = asyncErrorWrapper(async (req, res, next) => {
-    const projects = await Project.find();
-
-    return res.status(200).json({
-        success: true,
-        data: projects
-    });
+    return res.status(200).json(res.queryResults);
 });
 
 const getSingleProjectById = asyncErrorWrapper(async (req, res, next) => {

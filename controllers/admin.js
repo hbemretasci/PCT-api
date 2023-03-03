@@ -60,12 +60,7 @@ const changeUserRole = asyncErrorWrapper(async (req, res, next) => {
 });
 
 const getAllUsers = asyncErrorWrapper(async (req, res, next) => {
-    const users = await User.find().select({ __v: false });
-    
-    return res.status(200).json({
-        success: true,
-        data: users
-    });
+    return res.status(200).json(res.queryResults);
 });
 
 const getUsersByRole = asyncErrorWrapper(async (req, res, next) => {
