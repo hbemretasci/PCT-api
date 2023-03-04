@@ -38,6 +38,21 @@ const userSortHelper = (query, req) => {
     return query.sort("name");
 }
 
+const userFilterHelper = (model, req) => {
+    const roleFilter = req.query.role;
+    const organizationFilter = req.query.organization;
+    const filterObject = {};
+
+    if(roleFilter) {
+        filterObject["role"] = roleFilter;
+    }
+    if(organizationFilter) {
+        filterObject["organization"] = organizationFilter;
+    }
+
+    return model.find(filterObject);
+}
+
 const paginationHelper = async (model, query, req) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 5;
@@ -73,5 +88,6 @@ module.exports = {
     populateHelper,
     projectSortHelper,
     userSortHelper,
+    userFilterHelper,
     paginationHelper
 }
