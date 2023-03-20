@@ -58,6 +58,21 @@ const editUser = asyncErrorWrapper(async (req, res, next) => {
     });
 });
 
+const changePassword = asyncErrorWrapper(async (req, res, next) => {
+    const { password } = req.body;
+
+    const user = await User.findById(req.user.id);
+
+    user.password = password;
+
+    await user.save();
+
+    return res.status(200).json({
+        success: true,
+        message: "Password changed successful."
+    });
+});
+
 const forgotPassword = asyncErrorWrapper(async (req, res, next) => {
     const resetEmail = req.body.email;
 
@@ -70,10 +85,10 @@ const forgotPassword = asyncErrorWrapper(async (req, res, next) => {
 
     await user.save();
 
-    const resetPasswordUrl = `https://localhost:5000/api/auth/resetpassword?resetPasswordToken=${resetPasswordToken}`;
+    const resetPasswordUrl = `http://localhost:4200/auth/resetPassword/${resetPasswordToken}`;
 
     const emailTemplate = `
-    <h3>Reset Your Password</h3>
+    <h3>Reset Your Password?</h3>
     <p>This <a href = '${resetPasswordUrl}' target = '_blank'>link</a> will expire in an hour.</p>
     `;
 
@@ -122,7 +137,7 @@ const resetPassword = asyncErrorWrapper(async (req, res, next) => {
 
     return res.status(200).json({
         success: true,
-        message: "Reset password process succesfull."
+        message: "Reset password process succesful."
     });
 });
 
@@ -130,6 +145,7 @@ module.exports = {
     login,
     getUserProfile,
     editUser,
+    changePassword,
     forgotPassword,
     resetPassword
 }
