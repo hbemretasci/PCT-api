@@ -39,7 +39,7 @@ const UserSchema = new Schema({
     },
     organizationName: {
         type: String,
-        required: [true, "Please provide a organization name."]
+        required: [true, "Please provide a valid organization name."]
     },
     title: String,
     department: String,
